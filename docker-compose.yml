@@ -1,0 +1,140 @@
+services:
+  mongodb:
+    image: mongo:6
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - workstation-net
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - workstation-net
+
+  api-gateway:
+    build: 
+      context: ./backend/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - AUTH_SERVICE_URL=http://auth-service:4001
+      - TASK_SERVICE_URL=http://task-service:4002
+      - ANALYTICS_SERVICE_URL=http://analytics-service:4003
+      - NOTIFICATION_SERVICE_URL=http://notification-service:4005
+    depends_on:
+      - auth-service
+      - task-service
+      - analytics-service
+      - notification-service
+    networks:
+      - workstation-net
+
+  notification-service:
+    build:
+      context: ./backend/notification-service
+      dockerfile: Dockerfile
+    ports:
+      - "4005:4005"
+    environment:
+      - PORT=4005
+      - MONGO_URI=mongodb://mongodb:27017/workstation
+      - JWT_SECRET=workstation_dev_secret_key
+    depends_on:
+      - mongodb
+    networks:
+      - workstation-net
+
+  auth-service:
+    build:
+      context: ./backend/auth-service
+      dockerfile: Dockerfile
+    ports:
+      - "4001:4001"
+    environment:
+      - PORT=4001
+      - MONGO_URI=mongodb://mongodb:27017/workstation
+      - JWT_SECRET=workstation_dev_secret_key
+    depends_on:
+      - mongodb
+    networks:
+      - workstation-net
+
+  task-service:
+    build:
+      context: ./backend/task-service
+      dockerfile: Dockerfile
+    ports:
+      - "4002:4002"
+    environment:
+      - PORT=4002
+      - MONGO_URI=mongodb://mongodb:27017/workstation
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=workstation_dev_secret_key
+      - ENABLE_AI_FEATURES=${ENABLE_AI_FEATURES:-false}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - workstation-net
+
+  analytics-service:
+    build:
+      context: ./backend/analytics-service
+      dockerfile: Dockerfile
+    ports:
+      - "4003:4003"
+    environment:
+      - PORT=4003
+      - MONGO_URI=mongodb://mongodb:27017/workstation
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=workstation_dev_secret_key
+    depends_on:
+      - mongodb
+      - redis
+    networks:
+      - workstation-net
+
+  realtime-service:
+    build:
+      context: ./backend/realtime-service
+      dockerfile: Dockerfile
+    ports:
+      - "4004:4004"
+    environment:
+      - PORT=4004
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=workstation_dev_secret_key
+    depends_on:
+      - redis
+    networks:
+      - workstation-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - API_BASE_URL=http://api-gateway:4000
+      - NEXT_PUBLIC_API_BASE_URL=http://localhost:4000
+      - NEXT_PUBLIC_WS_BASE_URL=ws://localhost:4004
+    depends_on:
+      - api-gateway
+      - realtime-service
+    networks:
+      - workstation-net
+
+volumes:
+  mongo_data:
+
+networks:
+  workstation-net:
+    driver: bridge
