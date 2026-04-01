@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notification-service
+  namespace: workstation
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: notification-service
+  template:
+    metadata:
+      labels:
+        app: notification-service
+    spec:
+      containers:
+        - name: notification-service
+          image: workstation/notification-service:latest
+          ports:
+            - containerPort: 4005
+          envFrom:
+            - configMapRef:
+                name: workstation-config
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: workstation-secrets
+                  key: JWT_SECRET
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification-service
+  namespace: workstation
+spec:
+  selector:
+    app: notification-service
+  ports:
+    - protocol: TCP
+      port: 4005
+      targetPort: 4005

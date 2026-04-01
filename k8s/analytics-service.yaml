@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: analytics-service
+  namespace: workstation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: analytics-service
+  template:
+    metadata:
+      labels:
+        app: analytics-service
+    spec:
+      containers:
+        - name: analytics-service
+          image: workstation/analytics-service:latest
+          ports:
+            - containerPort: 4003
+          envFrom:
+            - configMapRef:
+                name: workstation-config
+          env:
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: workstation-secrets
+                  key: JWT_SECRET
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: analytics-service
+  namespace: workstation
+spec:
+  selector:
+    app: analytics-service
+  ports:
+    - protocol: TCP
+      port: 4003
+      targetPort: 4003
