@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-brand-50: #f0f4ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-500: #3b5bdb; /* AA on White */
+  --color-brand-600: #2b45b4;
+  --color-brand-700: #1f328c;
+  
+  --color-slate-50: #f8fafc;
+  --color-slate-400: #64748b;
+  --color-slate-500: #475569;
+  --color-slate-600: #334155;
+  --color-slate-900: #0f172a;
+  
+  --shadow-soft: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-premium: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-glow: 0 0 20px rgba(59, 91, 219, 0.2);
+}
+
+/* ───────────── Light mode ───────────── */
+:root {
+  color-scheme: light;
+  background-color: #ffffff;
+  color: #1e293b; /* Slate-800 for better default contrast */
+  font-family: 'Inter', system-ui, sans-serif;
+  --bg-surface: #f8fafc;
+  --border-subtle: #e2e8f0;
+}
+
+/* ───────────── Dark mode ───────────── */
+.dark {
+  color-scheme: dark;
+  background-color: #020617;
+  color: #f1f5f9; /* Slate-100 */
+  --bg-surface: #0f172a;
+  --border-subtle: #1e293b;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background-color: var(--bg-surface);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.dark .glass {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+::selection {
+  background: rgba(79, 70, 229, 0.2);
+  color: inherit;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
