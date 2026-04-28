@@ -38,27 +38,7 @@ Workstation is designed for engineering teams that demand reliability, performan
 
 Workstation utilizes an API Gateway pattern combined with an Event-Driven Broker (Redis) to coordinate between 6 specialized microservices:
 
-```
-Frontend Application (Next.js + React)
-            |
-            v
-API Gateway (Port 4000)
-   /        |        \        \
-  /         |         \        \
-Auth      Task       Analytics  Notifications
-Service   Service    Service    Service
-(4001)    (4002)     (4003)     (4005)
-  |        |          |          |
-  +------- MongoDB (Primary Data Store) -------+
-  |        |          |          |
-  +------- Redis (Caching & Pub/Sub) --------+
-           |
-           v
-    Realtime Service
-    (WebSocket, Port 4004)
-           |
-    Connected Clients
-```
+![alt text](docs/img.png)
 
 ### Microservice Responsibilities
 
