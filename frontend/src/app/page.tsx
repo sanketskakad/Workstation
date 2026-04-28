@@ -71,7 +71,7 @@ export default function HomePage() {
 
         <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
           <Link
-            href="/register"
+            href="/login"
             className="group relative inline-flex h-14 items-center justify-center gap-2 overflow-hidden rounded-full bg-brand-600 px-10 text-base font-bold text-white shadow-premium transition hover:bg-brand-700 active:scale-95"
           >
             Login
